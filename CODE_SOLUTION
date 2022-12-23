@@ -1,0 +1,92 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+
+int main() {
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */  
+    vector <string>hrml; 
+    string key, lines[20], queries[20]; 
+    int N, Q, count = 0;
+    cin>>N;
+cin>>Q;
+cin.ignore();//bo qua cho toi tim thay dau cach
+
+for(int i = 0; i<N; i++){
+    getline(cin, lines[i]);
+}
+
+for(int i = 0; i<Q; i++){
+    getline(cin, queries[i]);
+}
+
+//create vector of hrml keys
+while(count < N){
+    string tmp;
+    int end, slash;
+    end = lines[count].find(" ");
+    slash =  lines[count].find("/");
+
+    if(slash == -1){
+        if(end >= 0){
+            tmp = lines[count].substr(1, end-1);
+            if(key.length() == 0)
+                key = key + tmp;
+            else 
+                key = key + "." + tmp;
+        }else{
+            tmp = lines[count].substr(1, lines[count].size()-2);
+            if(key.length() == 0)
+                key = key + tmp;
+            else 
+                key = key + "." + tmp;
+        }
+        if(key.size() > 0)
+        hrml.push_back(key);
+    }else {
+        tmp = lines[count].substr(2, lines[count].find(">")-2);
+        key.replace(key.find(tmp), tmp.length(), "");
+        if(key.size() > 0){
+            key.erase(key.end()-1, key.end());
+        }
+        hrml.push_back("closing-hrml");
+    }
+    count++;
+}
+
+count = 0;
+//access values if querry key equals one of hrml keys
+while(count < Q){
+    string key = "";
+    string value = "";
+
+    key = queries[count].substr(0, queries[count].find("~"));
+    value = queries[count].substr(queries[count].find("~")+1, queries[count].size() - queries[count].find("~")+1);
+
+    for(int i = 0; i < hrml.size(); i++){
+        int start = 0;
+        string rest;
+
+        if(key == hrml.at(i)){
+            start = lines[i].find(" "+value);
+            if(start >= 0){
+                start++;
+                rest = lines[i].substr(start+value.size()+4, lines[i].size() - (start+4));
+                cout<<rest.substr(0, rest.find("\""))<<endl;
+                break;
+            }else{
+                cout<<"Not Found!"<<endl;
+            }
+            break;
+        } else if(i == hrml.size() - 1){
+            cout<<"Not Found!"<<endl;
+        }
+    }
+
+    count++;
+} 
+    return 0;
+}
